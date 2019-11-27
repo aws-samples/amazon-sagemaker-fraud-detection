@@ -12,46 +12,46 @@ Note: these steps were tested on Chrome browser using Mac OS
 #### open a browser and navigate to https://dashboard.eventengine.run/login
 #### Enter a 12-character "hash" provided to you by workshop organizer.
 #### Click on "Accpet Terms & Login"
-![Navigate to Sagemaker Service](/images/image-1.png)
+![Navigate to Sagemaker Service](/images/image-01.png)
 
 #### Click on "AWS Console"
-![Navigate to Sagemaker Service](/images/image-2.png)
+![Navigate to Sagemaker Service](/images/image-02.png)
 
 #### Please, log off from any other AWS accounts you are currently logged into
 
 #### Click on "Open AWS Console"
-![Navigate to Sagemaker Service](/images/image-3.png)
+![Navigate to Sagemaker Service](images/image-03.png)
 
 #### You should see a screen like this. 
 #### We now need select the correct Identity Role for the workshop
 #### Type "IAM" into the search bar and click on IAM 
 (Identity and Access Management).
-![Navigate to Sagemaker Service](/images/image-4.png)
+![Navigate to Sagemaker Service](/images/image-04.png)
 
 #### Click on "Roles"
-![Navigate to Sagemaker Service](/images/image-5.png)
+![Navigate to Sagemaker Service](/images/image-05.png)
 
 #### Scroll down past "Create Role" and Click on "TeamRole"
-![Navigate to Sagemaker Service](/images/image-6.png)
+![Navigate to Sagemaker Service](/images/image-06.png)
 
 #### Copy "Role ARN" by selecting the copy icon on the right
 #### You may want to temporariliy paste this role ARN into a notepad 
 #### Once you copied TeamRole ARN, click on "Services" in the upper left corner
-![Navigate to Sagemaker Service](/images/image-7.png)
+![Navigate to Sagemaker Service](/images/image-07.png)
 
 #### Enger "SageMaker" in the search bar and click on it
-![Navigate to Sagemaker Service](/images/image-8.png)
+![Navigate to Sagemaker Service](/images/image-08.png)
 
 #### You should see a screen like this. 
 #### Click on the orange button "Create Notebook Instance"
-![Navigate to Sagemaker Service](/images/image-9.png)
+![Navigate to Sagemaker Service](/images/image-09.png)
 
 #### On the next webpage, 
 #### - Give your notebook a name (no underscores, please)
 #### - Under Notebook instance type, select "ml.c5.2xlarge"
 #### - Under "Permission and encryption" select "Enter a custom IAM role ARN";
 #### - Paste your TeamRole ARN in the cell below labled "Custom IAM role ARN"
-####   note: your TeamRole ARN will have different AWS account number than what you see here
+####      Note: your TeamRole ARN will have different AWS account number than what you see here
 #### - Scroll down to the bottom of the page and click on "Create Notebook instance"
 ![Navigate to Sagemaker Service](/images/image-10.png)
 
@@ -64,8 +64,8 @@ Note: these steps were tested on Chrome browser using Mac OS
 
 #### A new Chrome browser tab will open displaying a command prompt terminal
 #### In the terminal tap, please, issue these two commands:
-####    $cd SageMaker 
-####    $git clone https://github.com/aws-samples/amazon-sagemaker-fraud-detection
+####    $ cd SageMaker 
+####    $ git clone https://github.com/aws-samples/amazon-sagemaker-fraud-detection
 #### You should see output similar to this:
 ![Navigate to Sagemaker Service](/images/image-13.png)
 

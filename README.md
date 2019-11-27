@@ -2,7 +2,7 @@
 
 ### Lab description
 
-This lab demonstrates three different ML algorithms used on for identifying fraudelent transactions on the same dataset:
+This lab demonstrates three different ML algorithms used for identifying fraudelent transactions on the same dataset:
 - SageMaker XGBoost
 - AutoEncoders
 - Neural Networks
@@ -39,7 +39,7 @@ Note: these steps were tested on Chrome browser using Mac OS
 #### Once you copied TeamRole ARN, click on "Services" in the upper left corner
 ![Navigate to Sagemaker Service](/images/image-07.png)
 
-#### Enger "SageMaker" in the search bar and click on it
+#### Enter "SageMaker" in the search bar and click on it
 ![Navigate to Sagemaker Service](/images/image-08.png)
 
 #### You should see a screen like this. 
@@ -56,7 +56,7 @@ Note: these steps were tested on Chrome browser using Mac OS
 ![Navigate to Sagemaker Service](/images/image-10.png)
 
 #### You should see your notebook being created. In a couple of minutes, its status will change
-#### from "Pending" to "In Service", at which point, please, click on "Open Jupyter"
+#### from "Pending" to "In Service", at which point, please click on "Open Jupyter"
 ![Navigate to Sagemaker Service](/images/image-11.png)
 
 #### In Jupyter Notebook console, please, click on 'New' -> 'Terminal' on the right-hand side
@@ -86,7 +86,7 @@ Note: these steps were tested on Chrome browser using Mac OS
 
 
 #### Open SageMaker Console by clicking on "Services" and searching for Sagemaker
-![Navigate to Sagemaker Service](/images/image-1.png)
+![Navigate to Sagemaker Service](/images/image-08.png)
 
 ## License
 

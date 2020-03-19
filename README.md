@@ -26,9 +26,9 @@ Note: these steps were tested on Chrome browser using Mac OS
 #### from "Pending" to "In Service", at which point, please click on "Open Jupyter"
 ![Navigate to Sagemaker Service](/images/image-11.png)
 
-#### You may now close the browser tab with command prompt terminal,
-#### return to Jupyter console and navigate the created folder structure to
+#### In Jupyter Notebook console navigate the created folder structure to
 #### amazon-sagemaker-fraud-detection -> workshop-1 
+![Navigate to Sagemaker Service](/images/image-14.png)
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.

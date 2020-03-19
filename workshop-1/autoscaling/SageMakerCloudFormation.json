@@ -1,0 +1,405 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Deploys Sagemaker model, ",
+  "Metadata": {
+    "AWS::CloudFormation::Interface": {
+      "ParameterGroups": [
+        {
+          "Label": {
+            "default": "General"
+          },
+          "Parameters": [
+            "Name"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Model details"
+          },
+          "Parameters": [
+            "ContainerImage",
+            "ModelS3Url"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Sagemaker auto scaling configuration"
+          },
+          "Parameters": [
+            "InstanceType",
+            "MinInstance",
+            "MaxInstance",
+            "AutoscaleCoolDownPeriod",
+            "SageMakerVariantInvocationsPerInstance",
+            "VariantName"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "Name": {
+      "Type": "String",
+      "Description": "A suffix to use for all recources created by this stack"
+    },
+    "ModelS3Url": {
+      "Type": "String",
+      "Description": "The Model url. e.g s3://mybucket-sagemaker/model.tar.gz"
+    },
+    "ContainerImage": {
+      "Type": "String",
+      "Description": "The Amazon EC2 Container Registry (Amazon ECR) path where inference code is stored. E.g 514117268639.dkr.ecr.ap-southeast-2.amazonaws.com/forecasting-deepar:latest"
+    },
+    "MinInstance": {
+      "Type": "Number",
+      "Description": "The number of instances to launch initially for this production variant"
+    },
+    "MaxInstance": {
+      "Type": "Number",
+      "Description": "The max number of instances to launch during autoscaling"
+    },
+    "InstanceType": {
+      "Type": "String",
+      "Description": "The ML compute instance type to use for this production variant.E.g ml.m4.xlarge"
+    },
+    "VariantName": {
+      "Type": "String",
+      "Default": "Initial",
+      "Description": "The name of the production variant."
+    },
+    "AutoscaleCoolDownPeriod": {
+      "Type": "Number",
+      "Default": "600",
+      "Description": "The amount of time, in seconds, after a scaling activity completes before any further trigger-related scaling activities can start"
+    },
+    "SageMakerVariantInvocationsPerInstance": {
+      "Type": "Number",
+      "Default": "100",
+      "Description": "SageMakerVariantInvocationsPerInstance is the average number of times per minute that each instance for a variant is invoked"
+    }
+  },
+  "Mappings": {},
+  "Conditions": {},
+  "Resources": {
+    "SagemakerModel": {
+      "Type": "AWS::SageMaker::Model",
+      "Properties": {
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "SageMakerExecutionRole",
+            "Arn"
+          ]
+        },
+        "ModelName": {
+          "Ref": "Name"
+        },
+        "PrimaryContainer": {
+          "Environment": {},
+          "ModelDataUrl": {
+            "Ref": "ModelS3Url"
+          },
+          "Image": {
+            "Ref": "ContainerImage"
+          }
+        }
+      }
+    },
+    "Endpoint": {
+      "Type": "AWS::SageMaker::Endpoint",
+      "Properties": {
+        "EndpointName": {
+          "Ref": "Name"
+        },
+        "EndpointConfigName": {
+          "Fn::GetAtt": [
+            "EndpointConfig",
+            "EndpointConfigName"
+          ]
+        }
+      }
+    },
+    "EndpointConfig": {
+      "Type": "AWS::SageMaker::EndpointConfig",
+      "Properties": {
+        "EndpointConfigName": {
+          "Ref": "Name"
+        },
+        "ProductionVariants": [
+          {
+            "ModelName": {
+              "Fn::GetAtt": [
+                "SagemakerModel",
+                "ModelName"
+              ]
+            },
+            "VariantName": {
+              "Ref": "VariantName"
+            },
+            "InitialInstanceCount": {
+              "Ref": "MinInstance"
+            },
+            "InstanceType": {
+              "Ref": "InstanceType"
+            },
+            "InitialVariantWeight": 1
+          }
+        ]
+      }
+    },
+    "AutoScalingTargetSagemaker": {
+      "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+      "DependsOn": "Endpoint",
+      "Properties": {
+        "MaxCapacity": {
+          "Ref": "MaxInstance"
+        },
+        "MinCapacity": {
+          "Ref": "MinInstance"
+        },
+        "ResourceId": {
+          "Fn::Join": [
+            "",
+            [
+              "endpoint",
+              "/",
+              {
+                "Fn::GetAtt": [
+                  "EndpointConfig",
+                  "EndpointConfigName"
+                ]
+              },
+              "/variant/",
+              {
+                "Ref": "VariantName"
+              }
+            ]
+          ]
+        },
+        "RoleARN": {
+          "Fn::GetAtt": [
+            "AutoScalingPolicyRole",
+            "Arn"
+          ]
+        },
+        "ScalableDimension": "sagemaker:variant:DesiredInstanceCount",
+        "ServiceNamespace": "sagemaker"
+      }
+    },
+    "AutoScalingPolicy": {
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+      "DependsOn": "AutoScalingTargetSagemaker",
+      "Properties": {
+        "PolicyName": "SageMakerEndpointInvocationScalingPolicy",
+        "PolicyType": "TargetTrackingScaling",
+        "ScalingTargetId": {
+          "Ref": "AutoScalingTargetSagemaker"
+        },
+        "TargetTrackingScalingPolicyConfiguration": {
+          "PredefinedMetricSpecification": {
+            "PredefinedMetricType": "SageMakerVariantInvocationsPerInstance"
+          },
+          "ScaleInCooldown": {
+            "Ref": "AutoscaleCoolDownPeriod"
+          },
+          "ScaleOutCooldown": {
+            "Ref": "AutoscaleCoolDownPeriod"
+          },
+          "TargetValue": {
+            "Ref": "SageMakerVariantInvocationsPerInstance"
+          }
+        }
+      }
+    },
+    "AutoScalingPolicyRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "sagemaker.amazonaws.com"
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "AutoscalingPolicySagemaker",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sagemaker:DescribeEndpoint",
+                    "sagemaker:DescribeEndpointConfig",
+                    "sagemaker:UpdateEndpointWeightsAndCapacities"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Action": [
+                    "application-autoscaling:*"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Action": "iam:CreateServiceLinkedRole",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:iam::*:role/aws-service-role/sagemaker.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_SageMakerEndpoint",
+                  "Condition": {
+                    "StringLike": {
+                      "iam:AWSServiceName": "sagemaker.application-autoscaling.amazonaws.com"
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "cloudwatch:PutMetricAlarm",
+                    "cloudwatch:DescribeAlarms",
+                    "cloudwatch:DeleteAlarms"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "RoleName": {
+          "Ref": "Name"
+        }
+      }
+    },
+    "SageMakerExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "sagemaker.amazonaws.com"
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "SagemakerDeployPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "cloudwatch:PutMetricData",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                    "logs:CreateLogGroup",
+                    "logs:DescribeLogStreams",
+                    "ecr:GetAuthorizationToken"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:s3:::",
+                          {
+                            "Fn::Select": [
+                              "1",
+                              {
+                                "Fn::Split": [
+                                  "//",
+                                  {
+                                    "Ref": "ModelS3Url"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:HeadBucket",
+                    "s3:ListBucket"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:s3:::",
+                          {
+                            "Fn::Select": [
+                              "2",
+                              {
+                                "Fn::Split": [
+                                  "/",
+                                  {
+                                    "Ref": "ModelS3Url"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage"
+                  ],
+                  "Resource": [
+                    "arn:aws:ecr:::repository/*"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "RoleName": {
+          "Fn::Join": [
+            "_",
+            [
+              {
+                "Ref": "Name"
+              },
+              "SageMakerDeployRole"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+  }
+}

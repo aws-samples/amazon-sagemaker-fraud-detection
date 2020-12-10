@@ -1,4 +1,4 @@
-## Sagemaker Fraud Detection Workshop
+## Sagemaker Feature Engineering, AutoPilot, and SHAPley workshop
 
 ### Lab description
 

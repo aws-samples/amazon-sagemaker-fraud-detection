@@ -1,35 +1,21 @@
-## Sagemaker Fraud Detection Workshop
+## Sagemaker Immersion Day Workshop.
 
-### Lab description
+1. SageMaker Overview
+2. Model Training with SageMaker Debugger
+3. Model Inference portfolio
+  - Real-time vs Batch inference
+  - Inference with Production Variants
+  - Inference pipeline and multi-container inference
+  - Serverless Inference
+  - Asynchronous Inference
+  - Multi-Model Endpoints
+  - Model Explainability (SageMaker Clarify)
+  - Model Monitoring, Data and Model Drift Detection
+  - Bias Detection in Data and Models
+4. SageMaker Feature Store (Time-permitting)
+5. SageMaker AutoML, AutoGluon (Time-permitting)
+6. HyperParameter Optimization
+7. SageMaker Canvas (if we do the immersion day on Studio).
 
-This lab demonstrates three different ML algorithms used for identifying fraudelent transactions on the same dataset:
-- SageMaker XGBoost
-- AutoEncoders
-- Neural Networks
 
-### Steps for launching the workshop environment using EVENT ENGINE 
-Note: these steps were tested on Chrome browser using Mac OS
-#### open a browser and navigate to https://dashboard.eventengine.run/login
-#### Enter a 12-character "hash" provided to you by workshop organizer.
-#### Click on "Accpet Terms & Login"
-![Navigate to Sagemaker Service](/images/image-01.png)
-
-#### Click on "AWS Console"
-![Navigate to Sagemaker Service](/images/image-02.png)
-
-#### Please, log off from any other AWS accounts you are currently logged into
-
-#### Click on "Open AWS Console"
-![Navigate to Sagemaker Service](images/image-03.png)
-
-#### You should see a screen like this with your notebook being created. In a couple of minutes, its status will change
-#### from "Pending" to "In Service", at which point, please click on "Open Jupyter"
-![Navigate to Sagemaker Service](/images/image-11.png)
-
-#### In Jupyter Notebook console, navigate the created folder structure to
-#### SageMaker-workshop -> workshop-1 
-![Navigate to Sagemaker Service](/images/image-14.png)
-## License
-
-This library is licensed under the MIT-0 License. See the LICENSE file.
 

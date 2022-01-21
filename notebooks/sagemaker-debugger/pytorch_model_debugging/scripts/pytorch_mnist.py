@@ -9,6 +9,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
+import os
 
 # ====================================#
 # 1. Import SMDebug framework class. #
@@ -163,6 +164,12 @@ def main():
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
     )
+    
+    directoryPath = "./data/MNIST/raw"
+    print("Start Debug print. Content of ", directoryPath)
+    print(os.listdir(directoryPath))
+    print("End Debug print")
+    
     dataset1 = datasets.MNIST("./data", train=True, download=True, transform=transform)
     dataset2 = datasets.MNIST("./data", train=False, transform=transform)
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)

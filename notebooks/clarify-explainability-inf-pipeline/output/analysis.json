@@ -1,0 +1,32 @@
+{
+    "version": "1.0",
+    "explanations": {
+        "kernel_shap": {
+            "label0": {
+                "global_shap_values": {
+                    "status": 0.9832995713667207,
+                    "duration": 0.33239933306981223,
+                    "credit_history": 0.1257502358261294,
+                    "purpose": 0.19317105643077798,
+                    "amount": 0.46677268080123946,
+                    "savings": 0.13198264888650907,
+                    "employment_duration": 0.25791358884676346,
+                    "installment_rate": 0.18520988710504585,
+                    "personal_status_sex": 0.10786260178273128,
+                    "other_debtors": 0.008815042200236605,
+                    "present_residence": 0.13310743585300566,
+                    "property": 0.12656315224670264,
+                    "age": 0.1188374436083233,
+                    "other_installment_plans": 0.037192027237181645,
+                    "housing": 0.03823373971193713,
+                    "number_credits": 0.0018394787614592417,
+                    "job": 0.01677992103213348,
+                    "people_liable": 0.02128892965354953,
+                    "telephone": 0.0857682870294292,
+                    "foreign_worker": 0.0022409229208593113
+                },
+                "expected_value": 1.3189524577840586
+            }
+        }
+    }
+}
